@@ -58,7 +58,13 @@ public class ProductController {
     // Postman : Raw, JSON
     @PostMapping("/insert")
     ResponseEntity<ResponseObject> insertProduct(@RequestBody Product newProduct) {
-        // 2 product must not have the same name !
+        // 2 product must not have the same name ! (Xử lý ở ProductRepository)
+        List<Product> foundProducts = repository.findByProductName(newProduct.getProductName().trim()); // Tìm những bản ghi có name theo yêu cầu
+        if(foundProducts.size() > 0){
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
+                    new ResponseObject("failed", "Product name already taken", "") // Thông báo name bị trùng
+            );
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("ok", "Insert product successfully", repository.save(newProduct))
         );
